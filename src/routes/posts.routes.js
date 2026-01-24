@@ -1,15 +1,15 @@
-// src/routes/posts.routes.js
 const express = require('express');
-
-// 1. Create a router instance (The "Mini-App")
 const router = express.Router();
+const postController = require('../controllers/posts.controller.js');
 
-// 2. Define routes on the router
-// Note: We use '/' because this router will be mounted at '/api/v1/posts' later.
-// So, '/' here actually means '/api/v1/posts/' in the real world.
-router.get('/', (req, res) => {
-    res.send('Fetching all blog posts from the modular router!');
-});
+console.log("Controllers found:", postController); // <--- Add this line
 
-// 3. Export the router so index.js can use it
+router.get('/:postId', postController.getPostById);
+
+// NEW: Route for a specific post using a parameter
+// The ':postId' must match the key you use in req.params
+// The ':postId' must match the key you use in req.params
+router.get('/:postId', postController.getPostById);
+
 module.exports = router;
+//
