@@ -1,23 +1,33 @@
-// src/index.js
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
+const connectDB = require('./config/db');
+const { errorHandler, requestLogger } = require('./middleware');
+const mainRouter = require('./routes');
+
 const app = express();
-const PORT = 3000;
+const port = process.env.PORT || 5000;
 
-// 1. Import the new router (The "Department")
-const postRouter = require('./routes/posts.routes.js');
+// Connect Database
+connectDB();
 
-app.get('/', (req, res) => {
-    res.send('Welcome to the Blogify API!');
+// Global Middleware
+app.use(express.json());
+app.use(cors());
+app.use(requestLogger);
+
+// API Routes
+app.use('/api/v1', mainRouter);
+app.use('/api', require('./routes/songs'));
+
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).json({ success: false, error: 'Route not found' });
 });
 
-// 2. Mount the router
-// This tells Express: "Any request starting with /api/v1/posts goes to postRouter"
-app.use('/api/v1/posts', postRouter);
+// Central Error Handler
+app.use(errorHandler);
 
-// OLD CODE REMOVED:
-// The app.get('/api/v1/posts'...) is gone. It lives in the router now.
-
-app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}/`);
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
-console.log("Done");
